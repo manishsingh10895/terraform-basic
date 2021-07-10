@@ -1,2 +1,6 @@
 subnet_cidr_block = "10.0.48.0/24"
-environment = "production"
+environment = "dev"
+env_prefix = "dev"
+avail_zone = "ap-south-1a"
+vpc_cidr_block = "10.0.0.0/16"
+my_ip = "178.192.1.1/32"
