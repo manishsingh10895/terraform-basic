@@ -20,6 +20,11 @@ variable "avail_zone" {
 
 }
 
+variable "instance_type" {
+  type = "string"
+
+}
+
 variable "environment" {
   description = "deplyment environment"
   default     = "development"
@@ -124,15 +129,31 @@ resource "aws_security_group" "dev_sg" {
 }
 
 # Fetch amazon linux ami id
-data "aws_ami"   "latest_amazon_linux_image" {
-    most_recent = true
-    owners = []
-    
+data "aws_ami" "latest_amazon_linux_image" {
+  most_recent = true
+  owners      = ["amazon"]
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
+  }
+
+  filter {
+    name = "virtualization-type"
+    values = ["hvm"]
+  }
 }
 
 resource "aws_instance" "dev_server" {
-  ami = "ami-00bf4ae5a7909786c"
+  ami   = data.aws_ami.latest_amazon_linux_image.id
+  instance_type = var.instance_type
+  vpc_security_group_ids = [ aws_security_group.dev_sg.id ]
+  availability_zone = var.avail_zone
+  associate_public_ip_address = []
+  subnet_id = aws_subnet.dev-subnet-1.id
+}
 
+output "aws_ami_id" {
+  value = data.aws_ami.latest_amazon_linux_image
 }
 
 output "dev-vpc-id" {
